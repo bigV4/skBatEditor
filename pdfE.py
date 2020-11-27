@@ -41,8 +41,8 @@ def get_num_pages(filename,pdfile):
     return page_num
 
 def _run_convert(filename, page, res=120):
-    #pdfile = getPdfReader(filename)
-    pdfile,f = getPdfReader2(filename)
+    pdfile,f = getPdfReader(filename),open(filename,"rb")
+    #pdfile,f = getPdfReader2(filename)
     if page <= get_num_pages(filename,pdfile):
         idx = page + 1
         temp_time = time.time() * 1000
@@ -71,8 +71,8 @@ def _run_convert(filename, page, res=120):
 
 def _run_convert_all(filename, res=120):
     # 由于每次转换的时候都需要重新将整个PDF载入内存，所以这里使用内存缓存
-    #pdfile = getPdfReader(filename)
-    pdfile,f = getPdfReader2(filename)
+    pdfile,f = getPdfReader(filename),open(filename,"rb")
+    #pdfile,f = getPdfReader2(filename)
     for i in range(0,get_num_pages(filename,pdfile)):
         temp_time = time.time() * 1000
         pageObj = pdfile.getPage(i)
@@ -96,5 +96,5 @@ def _run_convert_all(filename, res=120):
     f.close()
 
 if __name__ == '__main__':
-    _run_convert('demo.pdf', 120)
-    _run_convert_all('demo.pdf')
+    _run_convert('demo.pdf', 12)
+    #_run_convert_all('demo.pdf')
