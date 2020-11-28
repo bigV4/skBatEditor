@@ -7,7 +7,24 @@ import re
 #在python-docx中，run是最基本的单位，每个run对象内的文本样式都是一致的
 # 在从docx文件生成文档对象时，python-docx会根据样式的变化来将文本切分为一个个的Run对象。
 
-
+def diff(listA,listB):
+    #求交集的两种方式
+    retA = [i for i in listA if i in listB]
+    retB = list(set(listA).intersection(set(listB)))
+    
+    print("retA is: ",retA)
+    print("retB is: ",retB)
+    
+    #求并集
+    retC = list(set(listA).union(set(listB)))
+    print("retC1 is: ",retC)
+    
+    #求差集，在B中但不在A中
+    retD = list(set(listB).difference(set(listA)))
+    print("差集，在B中但不在A中 retD is: ",retD)
+    
+    retE = [i for i in listB if i not in listA]
+    print("差集，在B中但不在A中 retE is: ",retE)
 
 def replace_texts(inPathName, old_texts, new_texts):
     fdocx = docx.Document(inPathName)
@@ -49,35 +66,79 @@ def replace_texts(inPathName, old_texts, new_texts):
                                     run.text = run.text.replace(old_texts[i], new_texts[i]) #替换信息
     fdocx.save(inPathName.split(".docx")[0]+"_"+str(time.time())+"_xiugai.docx")
     
-def find_same(inPathNames):
-    fdocxs = []
-    fdocxtexts = []
+
+def gettexts(inPathNames):
+    fdocxs = []#document对象列表
+    fdocxtexts = []#document对象内短句列表
     for filename in inPathNames:
         fdocxs.append(docx.Document(filename))
     for fdocx in fdocxs:
         texts = []
+        #读取段落中的所有text
         for para in fdocx.paragraphs:
             if para.text:
                 texts += re.split(r'\s*([;,\.\!\?；，。？！]+)\s*', para.text)
+        #读取表格中的所有text
+        for table in fdocx.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        texts += re.split(r'\s*([;,\.\!\?；，。？！]+)\s*', para.text)
         for i in ["，", "；", "。", "！", "？", "", ",", ";", ".", "!", "?"]:
             try:
                 texts.remove(i)
             except Exception as e:
+                print(e)
                 pass
         fdocxtexts.append(texts)
     for texts in fdocxtexts:
+        print(texts,"\n")
+
+def find_same_twof(inPathNames):
+    fdocxs = []#document对象列表
+    fdocxtexts = []#document对象内短句列表
+    for filename in inPathNames:
+        fdocxs.append(docx.Document(filename))
+    for fdocx in fdocxs:
+        texts = []
+        #读取段落中的所有text
+        for para in fdocx.paragraphs:
+            if para.text:
+                texts += re.split(r'\s*([;,\.\!\?；，。？！]+)\s*', para.text)
+        #读取表格中的所有text
+        for table in fdocx.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        texts += re.split(r'\s*([;,\.\!\?；，。？！]+)\s*', para.text)
+        for i in ["，", "；", "。", "！", "？", "", ",", ";", ".", "!", "?"]:
+            try:
+                texts.remove(i)
+            except Exception as e:
+                print(e)
+                pass
+        fdocxtexts.append(texts)
+    print(fdocxtexts[0],"\n")
+    print(fdocxtexts[1],"\n")
+    if fdocxtexts[2]:
+        retB = [i for i in fdocxtexts[0] if i in fdocxtexts[1] and i not in fdocxtexts[2]]
+    else:
+        retB = [i for i in fdocxtexts[0] if i in fdocxtexts[1]]
+    #retB = list(set(retB))
+    for texts in retB:
         print(texts)
-
-
-
-
-
 
 #replace_texts("test.docx",["文件"],["【 FILE 】"])
 
-find_same(["test.docx",'test_2.docx'])
+#gettexts(["test.docx",'test_2.docx'])
+pathtemp= "/Users/liudyixia/OneDrive/瑞数信息/20181022四川电信企信部门/四川电信投标20191230-20200113"
+A = pathtemp + '四川电信技术文件-瑞数.docx'
+B = pathtemp + '2019年四川电信投标文件1.4.docx'
+find_same_twof([A, B])
+'''
 fpath = "test.docx"
 file=docx.Document(fpath)
 print('段落:'+str(len(file.paragraphs)))
 for i in range(len(file.paragraphs)):
     print("第"+str(i)+"段的内容是："+file.paragraphs[i].text)
+'''
