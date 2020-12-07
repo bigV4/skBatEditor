@@ -60,7 +60,7 @@ def _run_convert(filename, page, res=120):
         img.compression_quality = 90
         img.background_color = Color("white")
         # 保存图片
-        img_path = '%s_pg%d.png' % (filename[:filename.rindex('.')], idx)
+        img_path = 'dest/%s_pg%d.png' % (filename[:filename.rindex('.')], idx)
         img.save(filename=img_path)
         img.destroy()
         img,pdf_bytes,dst_pdf = None,None,None
@@ -88,7 +88,7 @@ def _run_convert_all(filename, res=120):
         img.compression_quality = 90
         img.background_color = Color("white")
         # 保存图片
-        img_path = '%s_pg%d.png' % (filename[:filename.rindex('.')], i+1)
+        img_path = 'dest/%s_pg%d.png' % (filename[:filename.rindex('.')], i+1)
         img.save(filename=img_path)
         img.destroy()
         img,pdf_bytes,dst_pdf = None,None,None

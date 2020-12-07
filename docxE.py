@@ -1,6 +1,7 @@
 import time
 import docx
 import re
+#docxtpl 一个很强大的包，其主要通过对docx文档模板加载
 #python-docx将整个文章看做是一个Document对象 官方文档 - Document，其基本结构如下：
 #每个Document包含许多个代表“段落”的Paragraph对象，存放在document.paragraphs中。
 #每个Paragraph都有许多个代表"行内元素"的Run对象，存放在paragraph.runs中。
