@@ -1,0 +1,6 @@
+target          //忽略这个target目录
+angular.json    //忽略这个angular.json文件
+log/*           //忽略log下的所有文件
+log/*.log       //忽略log目录下的.log文件
+temp/*           //忽略temp下的所有文件
+dest/*       //忽略dest目录下的所有文件
