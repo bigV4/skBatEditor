@@ -5,6 +5,7 @@ from pptx import Presentation
 from pptx.util import Cm, Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
+from pptx.oxml.xmlchemy import OxmlElement
 
 
 # 设置路径
@@ -19,12 +20,13 @@ blank_slide = prs.slide_layouts[6]
 slide_1 = prs.slides.add_slide(blank_slide)
 
 # 添加图片
-img_name  = 'demo_pg13.png'
+img_name1  = 'test.jpg'
+img_name  = 'test满月.png'
 ## 中央主图
-pic = slide_1.shapes.add_picture(image_file=img_name,
-                           left=Inches(1),
-                           top=Inches(1),
-                           width=Inches(8),
+pic = slide_1.shapes.add_picture(image_file=img_name1,
+                           left=Inches(0),
+                           top=Inches(0),
+                           width=Inches(10),
                            height=Inches(5)
                           )
 ## 左上角小图
@@ -72,9 +74,9 @@ font.size = Pt(36)    # 大小
 font.name = '微软雅黑'    # 字体
 font.bold = True    # 加粗
 font.italic = True  # 倾斜
-font.alpha = 56
+font.alpha = 0.30
 
 font.color.rgb = RGBColor(225, 225, 0)  # 黄色
 
 # 保存 ppt
-prs.save('test.pptx')
+prs.save('temp/test.pptx')

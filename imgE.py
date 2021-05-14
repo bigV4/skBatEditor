@@ -4,6 +4,7 @@ import shutil
 import os
 import sys
 import zipfile
+import re
 
 def unzip_file(zip_src, dst_dir):
     r = zipfile.is_zipfile(zip_src)
@@ -14,21 +15,23 @@ def unzip_file(zip_src, dst_dir):
     else:
         print('This is not zip')
 
-def add_text_to_image(image, text):
-    #font = ImageFont.truetype('C:\Windows\Fonts\STXINGKA.TTF', 36)
-    font = ImageFont.truetype('/System/Library/Fonts/PingFang.ttc', 36)
+def add_text_to_image(image, text, font_size=24, sparse=1):
+    #font = ImageFont.truetype('C:\Windows\Fonts\STXINGKA.TTF', font_size)
+    font = ImageFont.truetype('/System/Library/Fonts/PingFang.ttc', font_size)
     # 添加背景
     new_img = Image.new('RGBA', (image.size[0] * 3, image.size[1] * 3), (0, 0, 0, 0))
     #RGBA意思是红色，绿色，蓝色，Alpha的色彩空间，Alpha指透明度。JPG不支持透明度，所以要么丢弃Alpha,要么保存为.png
     new_img.paste(image, image.size)
     # 添加水印
     font_len = len(text)
+    str_len = font_len-len(''.join(re.findall(r'[a-z0-9]', text)))*0.5-len(''.join(re.findall(r'[A-Z]', text)))*0.35
+    print("font_len ",font_len )
     rgba_image = new_img.convert('RGBA')
     text_overlay = Image.new('RGBA', rgba_image.size, (255, 255, 255, 0))
     image_draw = ImageDraw.Draw(text_overlay)
-    for i in range(0, rgba_image.size[0], font_len*40+100):
-        for j in range(0, rgba_image.size[1], 200):
-            image_draw.text((i, j), text, font=font, fill=(0, 0, 0, 50))
+    for i in range(0, rgba_image.size[0], int(font_size*str_len*sparse)):
+        for j in range(0, rgba_image.size[1], int(font_size*sparse)):
+            image_draw.text((i, j), text, font=font, fill=(0, 0, 0, 30))
     text_overlay = text_overlay.rotate(-45)
     image_with_text = Image.alpha_composite(rgba_image, text_overlay)
     # 裁切图片
@@ -66,7 +69,10 @@ def add_text_to_docximage(image, text, source='test.docx', target='temp/'):
             im_after.save(tempunzippath+"/word/media/"+imgpath)
 
 if __name__ == '__main__':
+    text = u'测试使用'
+    text=u"瑞数信息RIVERSECURITY"
+    #text=u"瑞数信息科技有小公司"
     img = Image.open("test.jpg")
-    im_after = add_text_to_image(img, u'测试使用')
+    im_after = add_text_to_image(img, text)
     im_after.save(u'dest/测试使用.png')
-    add_text_to_docximage(img, u'测试使用')
+    add_text_to_docximage(img, text)
