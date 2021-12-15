@@ -157,3 +157,21 @@ def add_watermark(pdf_file_in, pdf_file_out, content):
         page.compressContentStreams()  # 压缩内容
         pdf_output.addPage(page)
     pdf_output.write(open(pdf_file_out, 'wb'))
+
+
+def split_pdf(filename, result, start=0, end=None):
+    """从filename中提取[start,end)之间的页码内容保存为result"""
+    # 切割出的PDF文件不含start页，含end页，即如想获得2-5页，start=1，end=5
+    # 打开原始 pdf 文件
+    pdf_src = PdfFileReader(filename)
+    if end is None:
+        # 获取页数
+        end = pdf_src.getNumPages()
+    with open(result, "wb") as fp:
+        # 创建空白pdf文件
+        pdf = PdfFileWriter()
+        # 提取页面内容，写入空白文件
+        for num in range(start, end):
+            pdf.addPage(pdf_src.getPage(num))
+        # 写入结果pdf
+        pdf.write(fp)
