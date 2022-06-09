@@ -3,12 +3,18 @@
 # -*- coding: utf-8 -*-
 import io
 import time
-
+'''
+wand是基于ctypes的python简单ImageMagick绑定， 支持2.6、2.7、3.3+和Pypy。
+目前，并非全部 magickwand api的功能已经在wand中实现了。
+'''
 from wand.image import Image
 from wand.color import Color
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
+import sys
+import os
+import datetime
 
 memo = {}
 
@@ -46,7 +52,7 @@ def get_num_pages(filename, pdfile):
     return page_num
 
 
-def _run_convert(filename, page, res=120):
+def run_convert(filename, page, res=120):
     '''把pdf指定页码转化为图片'''
     pdfile, f = get_pdf_reader(filename), open(filename, "rb")
     # pdfile,f = get_pdf_reader2(filename)
@@ -55,13 +61,14 @@ def _run_convert(filename, page, res=120):
         temp_time = time.time() * 1000
         # 由于每次转换的时候都需要重新将整个PDF载入内存，所以这里使用内存缓存
         pageobj = pdfile.getPage(page)
+        print(type(pageobj))
         dst_pdf = PdfFileWriter()
         dst_pdf.addPage(pageobj)
 
         pdf_bytes = io.BytesIO()
         dst_pdf.write(pdf_bytes)
         pdf_bytes.seek(0)
-
+        # resolution是分辨率
         img = Image(file=pdf_bytes, resolution=res)
         img.format = 'png'
         img.compression_quality = 90
@@ -78,7 +85,7 @@ def _run_convert(filename, page, res=120):
     f.close()
 
 
-def _run_convert_all(filename, res=120):
+def run_convert_all(filename, destpath="./dest/", res=120):
     '''把pdf所有页面转化为图片'''
     # 由于每次转换的时候都需要重新将整个PDF载入内存，所以这里使用内存缓存
     pdfile, f = get_pdf_reader(filename), open(filename, "rb")
@@ -92,13 +99,14 @@ def _run_convert_all(filename, res=120):
         pdf_bytes = io.BytesIO()
         dst_pdf.write(pdf_bytes)
         pdf_bytes.seek(0)
-
+        # resolution是分辨率
         img = Image(file=pdf_bytes, resolution=res)
         img.format = 'png'
         img.compression_quality = 90
         img.background_color = Color("white")
         # 保存图片
-        img_path = 'dest/%s_pg%d.png' % (filename[:filename.rindex('.')], i+1)
+        img_path = '%s_pg%d.png' % (filename[:filename.rindex('.')], i+1)
+        img_path = destpath + img_path
         img.save(filename=img_path)
         img.destroy()
         img, pdf_bytes, dst_pdf = None, None, None
