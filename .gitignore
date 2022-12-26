@@ -7,3 +7,4 @@ dest/*       //忽略dest目录下的所有文件
 temp/.DS_Store
 .DS_Store
 *.DS_Store
+.DS_Store
